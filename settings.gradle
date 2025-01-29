@@ -1,0 +1,3 @@
+rootProject.name = 'realtime-crypto-alert'
+include 'upbit-producer'
+

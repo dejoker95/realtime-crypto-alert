@@ -1,0 +1,1 @@
+[{"ticket":"test"},{"type":"ticker","is_only_realtime":"true","codes":["KRW-BTC"]}]
