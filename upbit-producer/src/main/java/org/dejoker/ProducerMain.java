@@ -1,6 +1,6 @@
 package org.dejoker;
 
-public class Main {
+public class ProducerMain {
     public static void main(String[] args) {
         try {
             new WebsocketProducer().run();

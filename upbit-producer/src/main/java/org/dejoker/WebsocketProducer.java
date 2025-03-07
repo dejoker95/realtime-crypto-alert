@@ -45,6 +45,7 @@ public class WebsocketProducer {
         log.info("Connected to server");
         this.session = session;
         String request = createRequestMessage(tickerInfo);
+        log.info(request);
         sendMessage(request);
         log.info("Request sent to server: {}", request);
     }
@@ -66,20 +67,24 @@ public class WebsocketProducer {
     @OnError
     public void onError(Session session, Throwable throwable) throws IOException {
         log.error(throwable.getMessage());
-        session.close();
     }
 
     public void sendMessage(String message) {
-        try {
-            session.getBasicRemote().sendText(message);
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        if (session != null && session.isOpen()) {
+            try {
+                session.getBasicRemote().sendText(message);
+            } catch (Exception e) {
+                log.error("Error sending message: ", e);
+            }
+        } else {
+            log.warn("Session is not open. Cannot send message.");
         }
     }
 
     public void run() throws Exception {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        container.connectToServer(WebsocketProducer.class, URI.create(UPBIT_SOCKET_URI));
+        container.connectToServer(this, URI.create(UPBIT_SOCKET_URI));
+        log.error("test");
         Thread.sleep(5000);
         while (true) {
             Thread.sleep(1000);

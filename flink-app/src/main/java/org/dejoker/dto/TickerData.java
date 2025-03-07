@@ -12,8 +12,8 @@ public class TickerData {
     private String type;
     private String code;
     private long timestamp;
-    private double trade_price;
-    private double trade_volume;
+    private double tradePrice;
+    private double tradeVolume;
 
     public TickerData(String jsonString) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
@@ -21,8 +21,8 @@ public class TickerData {
         this.type = node.get("type").asText();
         this.code = node.get("code").asText();
         this.timestamp = node.get("timestamp").asLong();
-        this.trade_price = node.get("trade_price").asDouble();
-        this.trade_volume = node.get("trade_volume").asDouble();
+        this.tradePrice = node.get("trade_price").asDouble();
+        this.tradeVolume = node.get("trade_volume").asDouble();
     }
 
     @Override
@@ -31,8 +31,8 @@ public class TickerData {
                 "\"type\":\"" + type + '\"' +
                 ", \"code\":\"" + code + '\"' +
                 ", \"timestamp\":" + timestamp +
-                ", \"trade_price\":" + trade_price +
-                ", \"trade_volume\":" + trade_volume +
+                ", \"tradePrice\":" + tradePrice +
+                ", \"trade_volume\":" + tradeVolume +
                 '}';
     }
 
