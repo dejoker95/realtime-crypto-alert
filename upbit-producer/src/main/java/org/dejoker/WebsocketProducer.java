@@ -42,6 +42,7 @@ public class WebsocketProducer {
 
     @OnOpen
     public void onOpen(Session session) throws IOException {
+
         log.info("Connected to server");
         this.session = session;
         String request = createRequestMessage(tickerInfo);

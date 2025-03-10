@@ -2,6 +2,7 @@ package org.dejoker.flink;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -25,6 +26,8 @@ public class FlinkApp {
     private final String KAFKA_TOPIC = "test";
     private final String KAFKA_GROUP_ID = "test-group";
     private final String KAFKA_BROKERS = "localhost:9092";
+    private final String REDIS_CONN = "redis://localhost:6379";
+    private final long REDIS_TTL = 60;
 
     public void run() throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -46,16 +49,13 @@ public class FlinkApp {
 //                        .withTimestampAssigner((event, ts) -> event.getTimestamp())
 //        );
 
-        SingleOutputStreamOperator<String> aggstream = kafkaSource.map(TickerData::new)
+        SingleOutputStreamOperator<Tuple4<String, Double, Long, Long>> aggstream = kafkaSource.map(TickerData::new)
                 .keyBy(TickerData::getCode)
                 .window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
-                .aggregate(new SimpleAvgFunction(), new SimpleProcessFunction());
+                .aggregate(new SimpleAvgFunction(), new SimpleProcessFunction(outputTag));
 
-//        aggstream.getSideOutput(outputTag).print();
-
-        aggstream.print();
-
-
+        aggstream.getSideOutput(outputTag).print();
+        aggstream.map(new RedisPushFunction(REDIS_CONN, REDIS_TTL));
         env.execute();
     }
 
